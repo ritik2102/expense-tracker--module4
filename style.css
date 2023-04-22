@@ -2,8 +2,14 @@ body{
     text-align:center;
     font-size:1.4vw;
     background-color:#D8D8D8;
+}
+.signup-body{
     display:grid;
-    grid-template-rows: 0.6fr 5fr 1;
+    grid-template-rows: 0.6fr 5fr 1fr;
+}
+.login-body{
+    display:grid;
+    grid-template-rows: 0.6fr 3.5fr 1fr;
 }
 a{
     text-decoration:none;
@@ -14,19 +20,25 @@ a{
     padding-top:50px;
     width:30vw;
     display:grid;
-    grid-template-rows:4fr 1fr;
+    grid-template-rows:3fr 1fr;
 }
 form{
     background-color:#41644A;
     border-radius:9px;
     display:grid;
-    grid-template-rows: repeat(4,1fr);
+    grid-template-rows: repeat(3,1fr);
 }
 .form-field{
     text-align:center;
     width:100%;
     display:grid;
     grid-template-rows:repeat(2,1fr);
+}
+
+.login-message,
+.password-message{
+    color:red;
+    padding-right:50%;
 }
 .form-input{
     position:relative;
