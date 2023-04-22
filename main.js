@@ -57,26 +57,19 @@ async function login(e){
         }
         console.log(credentials);
         const res=await axios.post('http://localhost:3000/users/user-login',credentials);
-        if(res.data.resData==='notFound'){
-            console.log('user not found');
-            loginMessage.style.visibility='visible';
-            emailField.value="";
-            passwordField.value="";
-        }
-        else if(res.data.resData==='incorrectPassword'){
-            console.log('Incorrect password');
-            passwordMessage.style.visibility='visible';
-            emailField.value="";
-            passwordField.value="";
-        }
-        else{
-            console.log('Login successful');
-            alert("Successful user login");
-            emailField.value="";
-            passwordField.value="";
-        }
+        
+        console.log('Login successful');
+        alert("Successful user login");
+        emailField.value="";
+        passwordField.value="";
     }
     catch(err){
-        console.log(err);
+        console.log(err.response.status);
+        if(err.response.status===401){
+            passwordMessage.style.visibility='visible';
+        }
+        else if(err.response.status===404){
+            loginMessage.style.visibility='visible';
+        }
     }
 }

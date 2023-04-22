@@ -25,13 +25,13 @@ exports.postUserLogin=(req,res,next)=>{
         .then(users=>{
             // if the user does not exist
             if(!users[0]){
-                res.status(201).json({resData:'notFound'});
+                res.status(404).json({resData:'notFound'});
             }
             // user exists
             else{
                 // password does not match
                 if(users[0].dataValues.password!==password){
-                    res.status(201).json({resData:'incorrectPassword'});
+                    res.status(401).json({resData:'incorrectPassword'});
                 }
                 // password matches
                 else{
