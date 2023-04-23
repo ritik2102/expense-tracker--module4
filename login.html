@@ -5,12 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles/login.css">
 </head>
 <body class="login-body">
     <h1>Expense Tracker</h1>
     <div class="form-container">
-        <form method="POST" onsubmit="login(event)">
+        <form class="login-form" method="POST" onsubmit="login(event)">
             <!-- <div class="form-field">
                 <label for="name">Enter your name:</label><br>
                 <input class="form-input" id="name" type="text" required/><br>
@@ -29,8 +29,8 @@
                 <button class="sign-in" type="submit">Log In</button>
             </div>
         </form>
-        <div class="log-in-container">
-            <a href=""><p class="log-in-link" > Sign up instead</p></a>
+        <div class="sign-up-container">
+            <a href="signup.html"><p class="sign-up-link" > New User ? Sign up instead</p></a>
         </div>
     </div>
     <div class="copyright">
@@ -39,6 +39,6 @@
     </div>
     
     <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
-    <script src="main.js"></script>
+    <script src="login.js"></script>
 </body>
 </html>
