@@ -28,8 +28,7 @@ async function login(e){
         console.log(credentials);
         const res=await axios.post('http://localhost:3000/users/user-login',credentials);
         
-        console.log('Login successful');
-        alert("Successful user login");
+        window.location.href='expense-main.html';
         emailField.value="";
         passwordField.value="";
     }

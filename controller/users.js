@@ -47,14 +47,6 @@ exports.postUserLogin=(req,res,next)=>{
                         res.status(401).json({resData:'incorrectPassword'});
                     }
                 })
-                // password does not match
-                // if(users[0].dataValues.password!==password){
-                //     res.status(401).json({resData:'incorrectPassword'});
-                // }
-                // // password matches
-                // else{
-                //     res.status(201).json({resData:'loginSuccessful'});
-                // }
             }
         })
         .catch(err=>{

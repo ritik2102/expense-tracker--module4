@@ -9,8 +9,12 @@ app.use(cors());
 const sequelize=require('./util/database');
 
 const userRoutes=require('./routes/users');
-app.use('/users',userRoutes);
+const expenseRoutes=require('./routes/expense');
 
+app.use('/users',userRoutes);
+app.use('/expense',expenseRoutes);
+
+// {force:true}
 sequelize.sync()
     .then(result=>{
         app.listen(3000);
