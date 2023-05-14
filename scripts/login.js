@@ -26,9 +26,14 @@ async function login(e){
             "password":password
         }
         console.log(credentials);
-        const res=await axios.post('http://localhost:3000/users/user-login',credentials);
-        
-        window.location.href='expense-main.html';
+        axios.post('http://localhost:3000/users/user-login',credentials)
+            .then(response=>{
+                localStorage.setItem('token',response.data.token);
+                window.location.href='expense-main.html';
+            })
+            .catch(err=>{
+                console.log(err);
+            })
         emailField.value="";
         passwordField.value="";
     }

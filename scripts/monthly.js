@@ -1,5 +1,7 @@
 const expenseList=document.getElementById('expense-list');
 
+const token=localStorage.getItem('token');
+
 function logData(record){
     
     const price=record.price;
@@ -17,8 +19,9 @@ function logData(record){
 
     deleteButton.onclick= async()=>{
         try{
-            const res=await axios.post(`http://localhost:3000/expense/delete-expense/${id}`);
+            const res=await axios.post(`http://localhost:3000/expense/delete-expense/${id}`,'',{headers:{"Authorization":token}});
             console.log(res.data.resData);
+            window.location.reload();
 
         }
         catch(err){
@@ -30,26 +33,24 @@ function logData(record){
 
 }
 
-
-async function init(){
+window.addEventListener('DOMContentLoaded',async()=>{
     try{
-        const res=await axios.get('http://localhost:3000/expense/get-expense');
+        const res=await axios.get('http://localhost:3000/expense/get-expense',{headers:{"Authorization":token}});
         res.data.resData.forEach((record)=>{
 
             const day=new Date();
             const date=day.getDate();
             const month=day.getMonth();
             const year=day.getFullYear();
+        
+                if( Number(record.month)===month && Number(record.year)===year){
+                    logData(record);
+                }
+            });
+        }
+        catch(err){
+            console.log(err);
+        }
+})
 
-            if( Number(record.month)===month && Number(record.year)===year){
-                logData(record);
-            }
-        });
-    }
-    catch(err){
-        console.log(err);
-    }
-    
-}
-init();
 

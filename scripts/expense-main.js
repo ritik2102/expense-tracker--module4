@@ -25,9 +25,11 @@ async function addExpense(e){
         const data={
             'price':price,
             'product':product,
-            'category':category
+            'category':category,
         };
-        const res=axios.post('http://localhost:3000/expense/post-expense',data);
+        console.log(data);
+        const token=localStorage.getItem('token');
+        const res=axios.post('http://localhost:3000/expense/post-expense',data,{headers:{"Authorization":token}});
         window.location.reload();
     }
     catch(err){
@@ -35,45 +37,6 @@ async function addExpense(e){
     }
     
 }
-function logData(record){
-    
-    const price=record.price;
-    const name=record.name;
-    const category=record.category;
-    
-    const li=document.createElement('li');
-    li.appendChild(document.createTextNode(`${name}  ${price}  `));
-    expenseList.appendChild(li);
-}
-async function daily(){
 
-    const res=await axios.get('http://localhost:3000/expense/get-expense');
-    res.data.resData.forEach((record)=>{
-        const day=new Date();
-        const date=day.getDate();
-        const month=day.getMonth();
-        const year=day.getFullYear();
 
-        if(Number(record.date)===date && Number(record.month)===month && Number(record.year)===year){
-            // console.log('ok');
-            logData(record);
-        }
-    });
-    
-}
-async function monthly(){
-    const res=await axios.get('http://localhost:3000/expense/get-expense');
-}
 
-async function yearly(){
-    const res=await axios.get('http://localhost:3000/expense/get-expense');
-}
-
-dailyHeader.addEventListener('click',daily);
-dailyFooter.addEventListener('click',daily);
-
-monthlyHeader.addEventListener('click',monthly);
-monthlyFooter.addEventListener('click',monthly);
-
-yearlyHeader.addEventListener('click',yearly);
-yearlyFooter.addEventListener('click',yearly);
