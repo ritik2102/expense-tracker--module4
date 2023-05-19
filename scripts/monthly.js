@@ -1,5 +1,5 @@
 const expenseList=document.getElementById('expense-list');
-
+const razorpayBtn=document.getElementById('razorpayBtn');
 const token=localStorage.getItem('token');
 
 function logData(record){
@@ -47,10 +47,48 @@ window.addEventListener('DOMContentLoaded',async()=>{
                     logData(record);
                 }
             });
+            // const token=localStorage.getItem('token');
+            const response=await axios.get('http://localhost:3000/purchase/premiumOrNot',{headers:{"Authorization":token}});
+            const isPremium=response.data.isPremium;
+            if(isPremium==='true'){
+                razorpayBtn.innerHTML='Premium User';
+                razorpayBtn.classList.add('premiumButton');
+            }
         }
         catch(err){
             console.log(err);
         }
 })
 
+
+document.getElementById('razorpayBtn').onclick= async function(e){
+    e.preventDefault();
+    const token=localStorage.getItem('token');
+    const response=await axios.get('http://localhost:3000/purchase/premiumMembership',{headers:{"Authorization":token}});
+    console.log(response);
+
+
+    var options={
+        "key":response.data.key_id,//key id generated from the dashboard
+        "order_id":response.data.order.id,//order id for a particular order
+        "handler": async function(response){
+            await axios.post('http://localhost:3000/purchase/updateTransactionStatus',{
+                order_id:options.order_id,
+                payment_id:response.razorpay_payment_id
+            },{headers:{"Authorization":token}});
+
+            alert("You are a premium user now");
+            window.location.reload();
+        }
+    };
+
+    const rzp1=new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
+
+    rzp1.on("payment.failed",function(response){
+        console.log(response);
+        alert("Something went wrong");
+    });
+}
 

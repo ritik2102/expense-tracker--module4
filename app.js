@@ -10,16 +10,22 @@ const sequelize=require('./util/database');
 
 const userRoutes=require('./routes/users');
 const expenseRoutes=require('./routes/expense');
+const purchaseRoutes=require('./routes/purchase');
 
 app.use('/users',userRoutes);
 app.use('/expense',expenseRoutes);
+app.use('/purchase',purchaseRoutes);
 
 
 const User=require('./model/user');
 const Expense=require('./model/expense');
+const Order=require('./model/order');
 
 User.hasMany(Expense);
 Expense.belongsTo(User,{constraints:true,onDelete:'CASCADE'});
+
+User.hasMany(Order);
+Order.belongsTo(User);
 
 // {force:true}
 sequelize.sync()
