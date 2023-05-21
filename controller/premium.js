@@ -1,37 +1,21 @@
+const Sequelize=require('sequelize');
+const sequelize=require('../util/database');
 const User=require('../model/user');
 const Expense=require('../model/expense');
 
 exports.getLeaderboard=async(req,res,next)=>{
 
-    User.findAll()
-        .then(users=>{
-            const response=[];
-            for(let i=0;i<users.length;i++){
-                const id=users[i].dataValues.id;
-                const name=users[i].dataValues.name;
-                let amount=0;
-                Expense.findAll({where:{userId:id}})
-                .then(expenses=>{
-                    for(let j=0;j<expenses.length;j++){
-                        // console.log(expenses[j].dataValues.price);
-                        amount=Number(expenses[j].dataValues.price)+amount;
-                    }   
-                    const obj={
-                        "id":id,
-                        "name":name,
-                        "amount":amount
-                    }
-                    response.push(obj);
-                    if(i===users.length-1){
-                        res.status(201).json({"resData":response});
-                    }
-                })
-                .catch(err=>{
-                    throw new Error(err);
-                })
+    const leaderboardOfUsers=await User.findAll({
+        attributes:['id','name',[sequelize.fn('sum',sequelize.col('expenses.price')),'total_cost']],
+        include:[
+            {
+                model:Expense,
+                attributes:[]
             }
-        })
-        .catch(err=>{
-            throw new Error(err);
-        })
+        ],
+        group:['user.id'],
+        order:[[sequelize.col("total_cost"),"DESC"]]
+    })
+    leaderboardOfUsers.sort((a,b)=>b.total_cost-a.total_cost);
+    res.status(201).json({"resData":leaderboardOfUsers});
 }

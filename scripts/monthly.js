@@ -66,14 +66,14 @@ window.addEventListener('DOMContentLoaded',async()=>{
                     e.preventDefault();
                     const res=await axios.get('http://localhost:3000/premium/getLeaderboard',{headers:{"Authorization":token}});
                     const data=res.data.resData;
-                    data.sort((a,b)=>b.amount-a.amount);
+        
                     const heading=document.createElement('h2');
                     heading.appendChild(document.createTextNode('Leaderboard'));
                     leaderboardList.appendChild(heading);
                     for(let i=0;i<data.length;i++){
                         const li=document.createElement('li');
                         li.classList.add('leaderboard-list-item')
-                        li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].amount}`));
+                        li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_cost || 0}`));
                         leaderboardList.appendChild(li);
                     }
                 }
