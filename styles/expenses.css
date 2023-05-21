@@ -10,20 +10,21 @@ nav{
 
 body{
     display:grid;
-    grid-template-rows: 0.423fr 3fr 1.1fr 0.3fr;
+    grid-template-rows: 0.5fr 3fr 1.3fr 0.5fr;
 }
 .nav-button{
     width: 80%;
     padding-top: 10%;
 }
 
-.boardButton{
-    width: 100%;
-}
-
 .premiumButton{
     color:#025464;
     font-weight:bolder;
+    /* display:grid;
+    grid-template-rows: 1fr 1fr; */
+}
+.boardButton{
+    width: 100%;
 }
 .nav-image{
     width: 60%;
@@ -31,7 +32,7 @@ body{
 
 .main-section{
     display:grid;
-    grid-template-rows:0.9fr 1fr;
+    grid-template-rows:1fr 1fr ;
 }
 
 
@@ -53,29 +54,30 @@ body{
 .logo-img{
     width:80%;
 }
-.form{
-    text-align:center;
-    padding:10%;
-}
-.form-ele{
-    margin:3%;
-}
-.form-label{
-    font-size:1.5vw;
-}
-.form-input{
-    margin-left:5px;
-    width:20%;
-    height:2.5vh;
-}
-.form-text{
-    font-size:1.3vw;
-}
+
 button{
     width:25%;
     border-radius:3px;
     color:azure;
     background-color:#41644A;
+}
+
+.expenses{
+    text-align:center;
+
+}
+.expense-header{
+    position:relative;
+    margin:0 auto;
+}
+#expense-list{
+    list-style-type:none;
+    font-size:20px;
+    font:sans-serif;
+}
+.expenses{
+    position:relative;
+    margin:5px auto;
 }
 
 #leaderboardList{

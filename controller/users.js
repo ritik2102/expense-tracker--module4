@@ -2,6 +2,8 @@ const User=require('../model/user');
 const bcrypt=require("bcrypt");
 const jwt=require('jsonwebtoken');
 
+require('dotenv').config();
+
 exports.postUser=(req,res,next)=>{
     
     const name=req.body.name;
@@ -9,7 +11,7 @@ exports.postUser=(req,res,next)=>{
     const password=req.body.password;
 
     bcrypt.hash(password,10, (err,hash)=>{
-        User.create({name:name,email:email,password:hash})
+        User.create({name:name,email:email,password:hash,isPremium:'false'})
         .then(result=>{
             res.status(201).json({resData:"success"});
         })
@@ -22,9 +24,9 @@ exports.postUser=(req,res,next)=>{
     
 }
 
-function generateAccessToken(id,name){
+function generateAccessToken(id,name,isPremium){
     
-    return jwt.sign({userId:id, name:name},'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c');
+    return jwt.sign({userId:id, name:name,isPremium:isPremium},'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c');
 }
 
 exports.postUserLogin=(req,res,next)=>{
@@ -46,7 +48,7 @@ exports.postUserLogin=(req,res,next)=>{
                         throw new Error("Something went wrong");
                     }
                     if(result==true){
-                        res.status(201).json({resData:'loginSuccessful',token:generateAccessToken(users[0].id,users[0].name)});
+                        res.status(201).json({resData:'loginSuccessful',token:generateAccessToken(users[0].id,users[0].name,users[0].isPremium)});
                     }
                     else{
                         res.status(401).json({resData:'incorrectPassword'});
@@ -57,4 +59,19 @@ exports.postUserLogin=(req,res,next)=>{
         .catch(err=>{
             console.log(err);
         })
+}
+
+exports.postUpdateToken=(req,res,next)=>{
+
+    try{
+        console.log(req.user.dataValues);
+        const id=req.user.dataValues.id;
+        const name=req.user.dataValues.name;
+        const isPremium=req.user.dataValues.isPremium;
+        console.log(id,name,isPremium);
+        res.status(201).json({resData:'token updation successful',token:generateAccessToken(id,name,isPremium)});
+    }
+    catch(err){
+        console.log(err);
+    }
 }

@@ -11,10 +11,13 @@ const sequelize=require('./util/database');
 const userRoutes=require('./routes/users');
 const expenseRoutes=require('./routes/expense');
 const purchaseRoutes=require('./routes/purchase');
+const premiumRoutes=require('./routes/premium');
 
 app.use('/users',userRoutes);
 app.use('/expense',expenseRoutes);
 app.use('/purchase',purchaseRoutes);
+app.use('/premium',premiumRoutes);
+
 
 
 const User=require('./model/user');

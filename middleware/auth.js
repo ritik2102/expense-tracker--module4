@@ -1,6 +1,8 @@
 const jwt=require('jsonwebtoken');
 const User=require('../model/user');
 
+require('dotenv').config();
+
 const authenticate=(req,res,next)=>{
     try{
         const token=req.header('Authorization');
@@ -9,7 +11,7 @@ const authenticate=(req,res,next)=>{
         User.findByPk(user.userId).
             then(user=>{
                 req.user=user;
-                console.log("Done");
+                console.log("At authenticator");
                 next();
             })
             .catch(err=>{

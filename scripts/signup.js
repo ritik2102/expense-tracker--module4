@@ -23,7 +23,7 @@ async function submitHandler(e){
         if(res.data.resData!=="success"){
             alert("User already registered")
         }
-        window.location.reload();
+        window.location.href='login.html';
     }
     catch(err){
         console.log(err);

@@ -2,6 +2,9 @@ const expenseList=document.getElementById('expense-list');
 const razorpayBtn=document.getElementById('razorpayBtn');
 const token=localStorage.getItem('token');
 
+
+const leaderboardList=document.getElementById('leaderboardList');
+
 function logData(record){
     
     const price=record.price;
@@ -55,6 +58,28 @@ window.addEventListener('DOMContentLoaded',async()=>{
         if(isPremium==='true'){
             razorpayBtn.innerHTML='Premium User';
             razorpayBtn.classList.add('premiumButton');
+
+            const boardButton=document.createElement('button');
+            boardButton.classList.add('boardButton');
+            boardButton.appendChild(document.createTextNode('Show leaderboard'));
+            razorpayBtn.appendChild(boardButton);   
+
+            document.getElementById('razorpayBtn').onclick=async function(e){
+            
+                e.preventDefault();
+                const res=await axios.get('http://localhost:3000/premium/getLeaderboard',{headers:{"Authorization":token}});
+                const data=res.data.resData;
+                data.sort((a,b)=>b.amount-a.amount);
+                const heading=document.createElement('h2');
+                heading.appendChild(document.createTextNode('Leaderboard'));
+                leaderboardList.appendChild(heading);
+                for(let i=0;i<data.length;i++){
+                    const li=document.createElement('li');
+                    li.classList.add('leaderboard-list-item')
+                    li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].amount}`));
+                    leaderboardList.appendChild(li);
+                }
+            }
         }
     }
     catch(err){
