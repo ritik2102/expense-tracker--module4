@@ -11,7 +11,7 @@ exports.postUser=(req,res,next)=>{
     const password=req.body.password;
 
     bcrypt.hash(password,10, (err,hash)=>{
-        User.create({name:name,email:email,password:hash,isPremium:'false'})
+        User.create({name:name,email:email,password:hash,isPremium:'false',total_expense:0})
         .then(result=>{
             res.status(201).json({resData:"success"});
         })

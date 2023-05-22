@@ -18,7 +18,11 @@ body{
 }
 
 .boardButton{
+    background-color: #FFB84C ;
+    border-color:azure;
+    border-radius:7px;
     width: 100%;
+    height:35px;
 }
 
 .premiumButton{

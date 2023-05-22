@@ -4,7 +4,7 @@ const token=localStorage.getItem('token');
 
 const leaderboardList=document.getElementById('leaderboardList');
 
-function logData(record){
+function logData(record,i){
     
     const price=record.price;
     const name=record.name;
@@ -14,7 +14,12 @@ function logData(record){
     const li=document.createElement('li');
     li.appendChild(document.createTextNode(`${name}  ${price} (${category})----`));
     li.classList.add('expenses');
-
+    if(i%2===0){
+        li.classList.add('expense-list-even');
+    }
+    else{
+        li.classList.add('expense-list-odd');
+    }
     const deleteButton=document.createElement('button');
     deleteButton.classList.add(record.id);
     deleteButton.appendChild(document.createTextNode('Delete'));
@@ -38,22 +43,29 @@ function logData(record){
 window.addEventListener('DOMContentLoaded',async()=>{
     try{
         const res=await axios.get('http://localhost:3000/expense/get-expense',{headers:{"Authorization":token}});
-        res.data.resData.forEach((record)=>{
 
+        const expenseHeading=document.createElement('h2');
+        expenseHeading.appendChild(document.createTextNode('Expenses'));
+        expenseHeading.classList.add('expense-header');
+        expenseList.appendChild(expenseHeading);
+
+        let i=-1;
+        res.data.resData.forEach((record)=>{
+            i++;
             const day=new Date();
             const date=day.getDate();
             const month=day.getMonth();
             const year=day.getFullYear();
         
                 if( Number(record.month)===month && Number(record.year)===year){
-                    logData(record);
+                    logData(record,i);
                 }
             });
             // const token=localStorage.getItem('token');
             const response=await axios.get('http://localhost:3000/purchase/premiumOrNot',{headers:{"Authorization":token}});
             const isPremium=response.data.isPremium;
             if(isPremium==='true'){
-                razorpayBtn.innerHTML='Premium User';
+                razorpayBtn.innerHTML='Premium User 👑';
                 razorpayBtn.classList.add('premiumButton');
 
                 const boardButton=document.createElement('button');
@@ -72,8 +84,13 @@ window.addEventListener('DOMContentLoaded',async()=>{
                     leaderboardList.appendChild(heading);
                     for(let i=0;i<data.length;i++){
                         const li=document.createElement('li');
-                        li.classList.add('leaderboard-list-item')
-                        li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_cost || 0}`));
+                        if(i%2===0){
+                            li.classList.add('leaderboard-list-item-even')
+                        }
+                        else{
+                            li.classList.add('leaderboard-list-item-odd')
+                        }
+                        li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_expense}`));
                         leaderboardList.appendChild(li);
                     }
                 }
@@ -105,6 +122,9 @@ document.getElementById('razorpayBtn').onclick= async function(e){
             window.location.reload();
         }
     };
+    // const rzp1=new Razorpay(options);
+    // rzp1.open();
+    // e.preventDefault();
 
     const rzp1=new Razorpay(options);
     rzp1.open();

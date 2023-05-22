@@ -24,8 +24,15 @@ body{
     grid-template-rows: 1fr 1fr; */
 }
 .boardButton{
+    background-color: #FFB84C ;
+    border-color:azure;
+    border-radius:7px;
     width: 100%;
+    height:30px;
 }
+/* linear-gradient(
+    red, #f06d06
+  ) */
 .nav-image{
     width: 60%;
 }
@@ -64,20 +71,41 @@ button{
 
 .expenses{
     text-align:center;
-
+}
+.expense-list-odd{
+    position:relative;
+    margin:0 auto;
+    width:30%;
+    padding:3px;
+    color:antiquewhite;
+    background-color: #41644A;
+}
+.expense-list-even{
+    position:relative;
+    margin:0 auto;
+    width:30%;
+    padding:3px;
+    background-color: #609966;
 }
 .expense-header{
     position:relative;
     margin:0 auto;
+    margin-bottom: 25px;
 }
 #expense-list{
     list-style-type:none;
-    font-size:20px;
+    font-size:1.5vw;
     font:sans-serif;
 }
-.expenses{
+/* .expenses{
     position:relative;
     margin:5px auto;
+} */
+
+.delete-button{
+    margin-left:10px;
+    width:25%;
+    height:30px;
 }
 
 #leaderboardList{
@@ -87,8 +115,20 @@ button{
     font:sans-serif;
 }
 
-.leaderboard-list-item{
+.leaderboard-list-item-even{
+    position:relative;
+    margin:0 auto;
+    width:30%;
     padding:3px;
+    background-color: #609966;
+}
+.leaderboard-list-item-odd{
+    position:relative;
+    margin:0 auto;
+    width:30%;
+    padding:3px;
+    color:antiquewhite;
+    background-color: #41644A;
 }
 
 footer{

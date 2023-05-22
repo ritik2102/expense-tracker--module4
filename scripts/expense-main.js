@@ -34,7 +34,7 @@ document.getElementById('razorpayBtn').onclick= async function(e){
     e.preventDefault();
     const token=localStorage.getItem('token');
     const response=await axios.get('http://localhost:3000/purchase/premiumMembership',{headers:{"Authorization":token}});
-    console.log(response);
+    // console.log(response);
 
 
     var options={
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
     const isPremium=response.data.isPremium;
     
     if(isPremium==='true'){
-        razorpayBtn.innerHTML='Premium User';
+        razorpayBtn.innerHTML='Premium User 👑';
         razorpayBtn.classList.add('premiumButton');
 
         const boardButton=document.createElement('button');
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
             for(let i=0;i<data.length;i++){
                 const li=document.createElement('li');
                 li.classList.add('leaderboard-list-item')
-                li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_cost || 0}`));
+                li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_expense}`));
                 leaderboardList.appendChild(li);
             }
         }

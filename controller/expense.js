@@ -1,4 +1,5 @@
 const Expense=require('../model/expense');
+const User=require('../model/user');
 const jwt=require('jsonwebtoken');
 
 exports.postExpense=(req,res,next)=>{
@@ -14,6 +15,8 @@ exports.postExpense=(req,res,next)=>{
 
     Expense.create({userId:req.user.id,price:price,name:product,category:category,date:date,month:month,year:year})
         .then(result=>{
+            req.user.total_expense=Number(req.user.total_expense)+Number(price);
+            req.user.save();
             res.status(201).json({resData:"success"});
         })
         .catch(err=>{
@@ -38,6 +41,8 @@ exports.deleteExpense=(req,res,next)=>{
 
     Expense.findAll({where:{id:id,userId:req.user.id}})
         .then(expense=>{
+            
+            req.user.total_expense=Number(req.user.total_expense)+Number(expense[0].price);
             expense[0].destroy();
             res.status(201).json({resData:"success"});
         })
