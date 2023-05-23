@@ -6,7 +6,7 @@ require('dotenv').config();
 
 exports.postUser=(req,res,next)=>{
     
-    const name=req.body.name;
+    try{const name=req.body.name;
     const email=req.body.email;
     const password=req.body.password;
 
@@ -21,7 +21,10 @@ exports.postUser=(req,res,next)=>{
             res.status(201).json({resData:error});
         })
     })
-    
+    }
+    catch(err){
+        throw new Error(err);
+    }
 }
 
 function generateAccessToken(id,name,isPremium){

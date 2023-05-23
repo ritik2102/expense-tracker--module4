@@ -89,6 +89,22 @@ button{
     font:sans-serif;
 }
 
+.leaderboard-list-item-even{
+    position:relative;
+    margin:0 auto;
+    width:30%;
+    padding:3px;
+    background-color: #609966;
+}
+.leaderboard-list-item-odd{
+    position:relative;
+    margin:0 auto;
+    width:30%;
+    padding:3px;
+    color:antiquewhite;
+    background-color: #41644A;
+}
+
 .leaderboard-list-item{
     padding:3px;
 }
