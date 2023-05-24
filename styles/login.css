@@ -1,7 +1,7 @@
 body{
     text-align:center;
     font-size:1.4vw;
-    background-color:#D8D8D8;
+    /* background-color:#D8D8D8; */
 }
 
 .login-body{
@@ -11,6 +11,7 @@ body{
 a{
     text-decoration:none;
 }
+
 .form-container{
     position:relative;
     margin: 0 auto;
@@ -27,8 +28,10 @@ form{
 }
 
 .form-field{
+    position:relative;
+    margin: auto auto;
     text-align:center;
-    width:100%;
+    width:100%; 
 }
 
 .login-message,
@@ -67,6 +70,9 @@ form{
     color:black;
     position:relative;
     margin:2%;
+}
+#forget-link{
+    font-size:smaller;
 }
 hr{
     width:60%;

@@ -12,11 +12,13 @@ const userRoutes=require('./routes/users');
 const expenseRoutes=require('./routes/expense');
 const purchaseRoutes=require('./routes/purchase');
 const premiumRoutes=require('./routes/premium');
+const passwordRoutes=require('./routes/password');
 
 app.use('/users',userRoutes);
 app.use('/expense',expenseRoutes);
 app.use('/purchase',purchaseRoutes);
 app.use('/premium',premiumRoutes);
+app.use('/password',passwordRoutes);
 
 
 
