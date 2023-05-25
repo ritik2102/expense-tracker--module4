@@ -25,6 +25,10 @@ app.use('/password',passwordRoutes);
 const User=require('./model/user');
 const Expense=require('./model/expense');
 const Order=require('./model/order');
+const ForgotPasswordRequests=require('./model/forgot-password-requests');
+
+User.hasMany(ForgotPasswordRequests);
+ForgotPasswordRequests.belongsTo(User);
 
 User.hasMany(Expense);
 Expense.belongsTo(User,{constraints:true,onDelete:'CASCADE'});

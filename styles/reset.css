@@ -18,7 +18,7 @@ a{
     padding-top:50px;
     width:30vw;
     display:grid;
-    grid-template-rows:3fr 1fr;
+    grid-template-rows:3fr 1.5fr;
 }
 form{
     background-color:#41644A;
