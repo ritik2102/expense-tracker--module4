@@ -42,11 +42,12 @@ exports.passwordReset = async (req, res, next) => {
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-                throw new Error(err);
+                throw new Error(error);
             } else {
                 console.log('Email sent' + info.response);
                 ForgotPasswordRequests.create({ id: uuid, userId: userId, isactive: true })
                     .then(result => {
+                        console.log('11');
                         res.status(201).json({ "success": true });
                     })
                     .catch((err) => {

@@ -44,6 +44,32 @@ exports.postExpense = async (req, res, next) => {
         throw new Error(err);
     }
 }
+exports.postSalary = async (req, res, next) => {
+
+    try {
+        console.log('1');
+        const day = new Date();
+        const date = day.getDate();
+        const month = day.getMonth();
+        const year = day.getFullYear();
+
+        const price = req.body.price;
+        const category = req.body.category;
+        console.log(req.user.id);
+        Expense.create({ userId: req.user.id, price: price, category: category, date: date, month: month, year: year })
+            .then(expense => {
+                console.log('working');
+                res.status(201).json({ resData: "success" });
+            })
+            .catch(async (err) => {
+                console.log(err);
+                return res.status(500).json({ "success": false })
+            });
+    }
+    catch (err) {
+        throw new Error(err);
+    }
+}
 
 exports.getExpenses = (req, res, next) => {
 
@@ -88,6 +114,24 @@ exports.deleteExpense = async (req, res, next) => {
             })
             .catch(async (err) => {
                 await t.rollback();
+                return res.status(500).json({ 'success': false })
+            })
+    }
+    catch (err) {
+        throw new Error(err);
+    }
+}
+exports.deleteSalary = async (req, res, next) => {
+
+    try {
+        const id = req.params.id;
+
+        Expense.findAll({ where: { id: id, userId: req.user.id }})
+            .then(expense => {
+                expense[0].destroy();
+                return res.status(201).json({resData:"success"});
+            })
+            .catch(async (err) => {
                 return res.status(500).json({ 'success': false })
             })
     }
