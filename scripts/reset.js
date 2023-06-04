@@ -9,7 +9,9 @@ recoverButton.onclick=async(e)=>{
         "email":email
     }
     const res=await axios.post('http://localhost:3000/password/forgotPassword',data);
+    console.log('11');
     const result=res.data.success;
+    console.log(result);
     if(result===true){
         console.log(result);
         passwordResetSent.style.visibility='visible';

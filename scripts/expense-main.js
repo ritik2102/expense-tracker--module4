@@ -3,9 +3,11 @@ const razorpayBtn = document.getElementById('razorpayBtn');
 const priceField = document.getElementById('price');
 const productField = document.getElementById('product');
 const categoryField = document.getElementById('category');
+const salaryField=document.getElementById('amount');
 
 const mainSection = document.getElementById('main-section');
 const leaderboardList = document.getElementById('leaderboardList');
+
 async function addExpense(e) {
 
     try {
@@ -29,6 +31,29 @@ async function addExpense(e) {
     }
 
 }
+
+async function addSalary(e) {
+
+    try {
+        e.preventDefault();
+        const price = salaryField.value;
+        const category = 'salary';
+        const data = {
+            'price': price,
+            'category': category,
+        };
+        const token = localStorage.getItem('token');
+        console.log('Here');
+        const res = await axios.post('http://localhost:3000/expense/post-salary', data, { headers: { "Authorization": token } });
+        console.log(res.data.resData);
+        window.location.reload();
+    }
+    catch (err) {
+        console.log(err);
+    }
+
+}
+
 
 document.getElementById('razorpayBtn').onclick = async function (e) {
     try {
@@ -85,12 +110,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             razorpayBtn.innerHTML = 'Premium User 👑';
             razorpayBtn.classList.add('premiumButton');
 
-            const boardButton = document.createElement('button');
+            const boardButton = document.getElementById('leader-board');
             boardButton.classList.add('boardButton');
-            boardButton.appendChild(document.createTextNode('Show leaderboard'));
-            razorpayBtn.appendChild(boardButton);
 
-            document.getElementById('razorpayBtn').onclick = async function (e) {
+            boardButton.onclick = async function (e) {
 
                 e.preventDefault();
                 const res = await axios.get('http://localhost:3000/premium/getLeaderboard', { headers: { "Authorization": token } });

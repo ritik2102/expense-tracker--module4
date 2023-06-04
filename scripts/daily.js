@@ -1,9 +1,61 @@
 const expenseList = document.getElementById('expense-list');
 const razorpayBtn = document.getElementById('razorpayBtn');
 const token = localStorage.getItem('token');
+const dateField = document.getElementById('date-field');
+const monthField = document.getElementById('month-field');
+const yearField = document.getElementById('year-field');
+const expensesHeading=document.getElementById('expenses-heading');
+const expenseTable = document.getElementById('expense-table');
 
 
 const leaderboardList = document.getElementById('leaderboardList');
+
+async function getExpenses(e) {
+
+    e.preventDefault();
+
+    const date = dateField.value;
+    const month = monthField.value
+    const year = yearField.value;
+
+    const monthName=['Jan','Feb','Mar','Apr','May','Jun','July','Aug','Sept','Oct','Nov','Dec'];
+
+    const dateHead=document.createElement('p');
+    dateHead.appendChild(document.createTextNode(`${date} ${monthName[month]} ${year}`));
+
+    const lineBreak=document.createElement('br');
+    expensesHeading.appendChild(lineBreak);
+    expensesHeading.appendChild(dateHead);
+
+    const res = await axios.get('http://localhost:3000/expense/get-expense', { headers: { "Authorization": token } });
+
+    let netExpenses=0;
+    let netSavings=0;
+    let i = -1;
+    res.data.resData.forEach((record) => {
+        i++;
+        
+        if (Number(record.date) === Number(date) && Number(record.month) + 1 === Number(month) && Number(record.year) === Number(year)) {
+            if(record.name===null){
+                netSavings+=record.price;
+            }
+            else{
+                netExpenses+=record.price;
+            }
+            logData(record, i);
+        }
+    });
+    const netMoney=document.createElement('h2');
+    if(netSavings-netExpenses>=0){
+        netMoney.appendChild(document.createTextNode(`Net savings- ${netSavings-netExpenses}`));
+    }
+    else{
+        netMoney.appendChild(document.createTextNode(`Net expenses- ${netExpenses-netSavings}`));
+    }
+    const netMoneyField=document.getElementById('net-money');
+    netMoneyField.appendChild(netMoney);
+
+}
 
 function logData(record, i) {
 
@@ -13,15 +65,44 @@ function logData(record, i) {
         const category = record.category;
         const id = record.id;
 
-        const li = document.createElement('li');
-        li.classList.add('expenses');
-        li.appendChild(document.createTextNode(`${name}  ${price} (${category})   `));
-        if (i % 2 === 0) {
-            li.classList.add('expense-list-even');
+        const tableRow = document.createElement('tr');
+        const deleteData=document.createElement('td');
+        deleteData.classList.add('delete-field');
+
+        if (name === null) {
+            const descriptionData = document.createElement('td');
+            descriptionData.appendChild(document.createTextNode(`Salary`));
+            const categoryData = document.createElement('td');
+            categoryData.appendChild(document.createTextNode(`Salary`));
+            const incomeData = document.createElement('td');
+            incomeData.appendChild(document.createTextNode(`${price}`));
+            const expenseData = document.createElement('td');
+            expenseData.appendChild(document.createTextNode(``));
+
+            tableRow.appendChild(descriptionData);
+            tableRow.appendChild(categoryData);
+            tableRow.appendChild(incomeData);
+            tableRow.appendChild(expenseData);
+            tableRow.appendChild(deleteData);
         }
         else {
-            li.classList.add('expense-list-odd');
+            const descriptionData = document.createElement('td');
+            descriptionData.appendChild(document.createTextNode(`${name}`));
+            const categoryData = document.createElement('td');
+            categoryData.appendChild(document.createTextNode(`${category}`));
+            const incomeData = document.createElement('td');
+            incomeData.appendChild(document.createTextNode(``));
+            const expenseData = document.createElement('td');
+            expenseData.appendChild(document.createTextNode(`${price}`));
+
+            tableRow.appendChild(descriptionData);
+            tableRow.appendChild(categoryData);
+            tableRow.appendChild(incomeData);
+            tableRow.appendChild(expenseData);
+            tableRow.appendChild(deleteData);
         }
+
+        expenseTable.appendChild(tableRow);
 
         const deleteButton = document.createElement('button');
         deleteButton.classList.add(record.id);
@@ -31,17 +112,22 @@ function logData(record, i) {
 
         deleteButton.onclick = async () => {
             try {
-                const res = await axios.post(`http://localhost:3000/expense/delete-expense/${id}`, '', { headers: { "Authorization": token } });
-                console.log(res.data.resData);
-                window.location.reload();
-
+                let res;
+                if(name===null){
+                    res = await axios.post(`http://localhost:3000/expense/delete-salary/${id}`, '', { headers: { "Authorization": token } });
+                }
+                else{
+                    res = await axios.post(`http://localhost:3000/expense/delete-expense/${id}`, '', { headers: { "Authorization": token } });
+                }
+                if(res.data.resData==='success'){
+                    expenseTable.removeChild(tableRow);
+                }
             }
             catch (err) {
                 console.log(err);
             }
         }
-        li.appendChild(deleteButton);
-        expenseList.appendChild(li);
+        deleteData.appendChild(deleteButton);
     }
     catch (err) {
         throw new Error(err);
@@ -52,38 +138,16 @@ function logData(record, i) {
 
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        const res = await axios.get('http://localhost:3000/expense/get-expense', { headers: { "Authorization": token } });
-
-        const expenseHeading = document.createElement('h2');
-        expenseHeading.appendChild(document.createTextNode('Expenses'));
-        expenseHeading.classList.add('expense-header');
-        expenseList.appendChild(expenseHeading);
-
-        let i = -1;
-        res.data.resData.forEach((record) => {
-            i++;
-            const day = new Date();
-            const date = day.getDate();
-            const month = day.getMonth();
-            const year = day.getFullYear();
-
-            if (Number(record.date) === date && Number(record.month) === month && Number(record.year) === year) {
-                logData(record, i);
-            }
-        });
-
         const response = await axios.get('http://localhost:3000/purchase/premiumOrNot', { headers: { "Authorization": token } });
         const isPremium = response.data.isPremium;
         if (isPremium === 'true') {
             razorpayBtn.innerHTML = 'Premium User 👑';
             razorpayBtn.classList.add('premiumButton');
 
-            const boardButton = document.createElement('button');
+            const boardButton = document.getElementById('leader-board');
             boardButton.classList.add('boardButton');
-            boardButton.appendChild(document.createTextNode('Show leaderboard'));
-            razorpayBtn.appendChild(boardButton);
 
-            document.getElementById('razorpayBtn').onclick = async function (e) {
+            boardButton.onclick = async function (e) {
 
                 e.preventDefault();
                 const res = await axios.get('http://localhost:3000/premium/getLeaderboard', { headers: { "Authorization": token } });
