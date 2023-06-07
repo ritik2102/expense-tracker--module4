@@ -4,8 +4,11 @@ const token = localStorage.getItem('token');
 const dateField = document.getElementById('date-field');
 const monthField = document.getElementById('month-field');
 const yearField = document.getElementById('year-field');
-const expensesHeading=document.getElementById('expenses-heading');
+const expensesHeading = document.getElementById('expenses-heading');
 const expenseTable = document.getElementById('expense-table');
+const reportButton = document.getElementById('report-button');
+const downloadList = document.getElementById('download-list');
+const downloadsHead = document.getElementById('downloads-head');
 
 
 const leaderboardList = document.getElementById('leaderboardList');
@@ -18,41 +21,41 @@ async function getExpenses(e) {
     const month = monthField.value
     const year = yearField.value;
 
-    const monthName=['Jan','Feb','Mar','Apr','May','Jun','July','Aug','Sept','Oct','Nov','Dec'];
+    const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
-    const dateHead=document.createElement('p');
+    const dateHead = document.createElement('p');
     dateHead.appendChild(document.createTextNode(`${date} ${monthName[month]} ${year}`));
 
-    const lineBreak=document.createElement('br');
+    const lineBreak = document.createElement('br');
     expensesHeading.appendChild(lineBreak);
     expensesHeading.appendChild(dateHead);
 
     const res = await axios.get('http://localhost:3000/expense/get-expense', { headers: { "Authorization": token } });
 
-    let netExpenses=0;
-    let netSavings=0;
+    let netExpenses = 0;
+    let netSavings = 0;
     let i = -1;
     res.data.resData.forEach((record) => {
         i++;
-        
+
         if (Number(record.date) === Number(date) && Number(record.month) + 1 === Number(month) && Number(record.year) === Number(year)) {
-            if(record.name===null){
-                netSavings+=record.price;
+            if (record.name === null) {
+                netSavings += record.price;
             }
-            else{
-                netExpenses+=record.price;
+            else {
+                netExpenses += record.price;
             }
             logData(record, i);
         }
     });
-    const netMoney=document.createElement('h2');
-    if(netSavings-netExpenses>=0){
-        netMoney.appendChild(document.createTextNode(`Net savings- ${netSavings-netExpenses}`));
+    const netMoney = document.createElement('h2');
+    if (netSavings - netExpenses >= 0) {
+        netMoney.appendChild(document.createTextNode(`Net savings- ${netSavings - netExpenses}`));
     }
-    else{
-        netMoney.appendChild(document.createTextNode(`Net expenses- ${netExpenses-netSavings}`));
+    else {
+        netMoney.appendChild(document.createTextNode(`Net expenses- ${netExpenses - netSavings}`));
     }
-    const netMoneyField=document.getElementById('net-money');
+    const netMoneyField = document.getElementById('net-money');
     netMoneyField.appendChild(netMoney);
 
 }
@@ -66,7 +69,7 @@ function logData(record, i) {
         const id = record.id;
 
         const tableRow = document.createElement('tr');
-        const deleteData=document.createElement('td');
+        const deleteData = document.createElement('td');
         deleteData.classList.add('delete-field');
 
         if (name === null) {
@@ -113,13 +116,13 @@ function logData(record, i) {
         deleteButton.onclick = async () => {
             try {
                 let res;
-                if(name===null){
+                if (name === null) {
                     res = await axios.post(`http://localhost:3000/expense/delete-salary/${id}`, '', { headers: { "Authorization": token } });
                 }
-                else{
+                else {
                     res = await axios.post(`http://localhost:3000/expense/delete-expense/${id}`, '', { headers: { "Authorization": token } });
                 }
-                if(res.data.resData==='success'){
+                if (res.data.resData === 'success') {
                     expenseTable.removeChild(tableRow);
                 }
             }
@@ -138,6 +141,7 @@ function logData(record, i) {
 
 window.addEventListener('DOMContentLoaded', async () => {
     try {
+        // Every time the server restarts, the backend might not be available, so we are just giving time for backend to start properly
         const response = await axios.get('http://localhost:3000/purchase/premiumOrNot', { headers: { "Authorization": token } });
         const isPremium = response.data.isPremium;
         if (isPremium === 'true') {
@@ -168,6 +172,25 @@ window.addEventListener('DOMContentLoaded', async () => {
                     leaderboardList.appendChild(li);
                 }
             }
+
+            await axios.get('http://localhost:3000/users/getDownloads', { headers: { "Authorization": token } })
+                .then(response => {
+                    const files = response.data.response;
+                    downloadsHead.appendChild(document.createTextNode('Downloaded files'));
+                    files.forEach((file) => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = file.url;
+                        a.appendChild(document.createTextNode(`    Download file again`))
+                        li.appendChild(document.createTextNode(`${file.file_name}`));
+                        li.appendChild(a);
+                        downloadList.appendChild(li);
+                    })
+
+                })
+                .catch(err => {
+                    throw new Error(err);
+                })
         }
     }
     catch (err) {
@@ -206,6 +229,42 @@ document.getElementById('razorpayBtn').onclick = async function (e) {
     }
     catch (err) {
         throw new Error(err);
+    }
+}
+
+reportButton.onclick = async (e) => {
+    try {
+
+        e.preventDefault();
+        const response = await axios.get('http://localhost:3000/purchase/premiumOrNot', { headers: { "Authorization": token } });
+        const isPremium = response.data.isPremium;
+        if (isPremium === 'true') {
+            await axios.get('http://localhost:3000/users/download', { headers: { "Authorization": token } })
+                .then((response) => {
+                    if (response.status === 200) {
+                        // Here the backend will send a download link which as soon as opened will
+                        // download the file
+                        var a = document.createElement('a');
+                        a.href = response.data.fileUrl;
+                        // downloading it with name myexpense.csv
+                        a.download = 'myexpense.csv';
+                        a.click();
+                        // window.location.reload();
+                    } else {
+                        throw new Error
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        else {
+            alert('Download report function is available for premium users only');
+        }
+
+    }
+    catch (err) {
+        console.log(err);
     }
 }
 

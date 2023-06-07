@@ -1,8 +1,53 @@
 const User = require('../model/user');
+const Expense = require('../model/expense');
+const Downloads=require('../model/downloads');
+const UserServices=require('../services/userservices');
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+// const AWS = require('aws-sdk');
+const S3Service=require('../services/S3services');
 
 require('dotenv').config();
+
+exports.getDownloads=async(req,res,next)=>{
+    try{
+        const downloads=await req.user.getDownloads();
+        console.log(downloads);
+        res.status(200).json({response:downloads});
+    } catch(err){
+        console.log(err);
+    }
+}
+
+exports.downloadExpense = async (req, res, next) => {
+
+    try {
+        const expenses = await UserServices.getExpenses(req);
+        const stringifiedExpenses = JSON.stringify(expenses);
+        const userId = req.user.id;
+        // filenname should depend upon userId
+        const fileName = `Expense${userId}/${new Date()}.txt`;
+        const fileUrl = await S3Service.uploadToS3(stringifiedExpenses, fileName);
+
+        const day=new Date();
+        const date=day.getDay();
+        const month=day.getMonth();
+        const year=day.getFullYear();
+        Downloads.create({userId: userId,url: fileUrl,file_name:`Expenses ${date}_${month}_${year}`})
+            .then(response=>{
+                res.status(200).json({ fileUrl, success: true });
+            })
+            .catch(err=>{
+                console.log(err);
+            })
+
+        // res.status(200).json({ fileUrl, success: true });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({fileUrl:'', success: false });
+    }
+}
 
 exports.postUser = (req, res, next) => {
 
@@ -85,3 +130,6 @@ exports.postUpdateToken = (req, res, next) => {
         console.log(err);
     }
 }
+
+
+

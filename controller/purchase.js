@@ -64,6 +64,7 @@ exports.updateTransactionStatus = (req, res) => {
 
 exports.premiumOrNot = async (req, res, next) => {
     try {
+        // console.log(req.user);
         const isPremium = req.user.dataValues.isPremium;
         res.status(201).json({ isPremium: isPremium });
     }

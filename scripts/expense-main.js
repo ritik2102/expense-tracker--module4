@@ -43,7 +43,6 @@ async function addSalary(e) {
             'category': category,
         };
         const token = localStorage.getItem('token');
-        console.log('Here');
         const res = await axios.post('http://localhost:3000/expense/post-salary', data, { headers: { "Authorization": token } });
         console.log(res.data.resData);
         window.location.reload();

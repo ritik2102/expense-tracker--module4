@@ -5,6 +5,9 @@ const leaderboardList = document.getElementById('leaderboardList');
 const yearField = document.getElementById('year-field');
 const expensesHeading=document.getElementById('expenses-heading');
 const expenseTable = document.getElementById('expense-table');
+const reportButton = document.getElementById('report-button');
+const downloadList = document.getElementById('download-list');
+const downloadsHead = document.getElementById('downloads-head');
 
 async function getExpenses(e) {
 
@@ -166,6 +169,25 @@ window.addEventListener('DOMContentLoaded', async () => {
                     leaderboardList.appendChild(li);
                 }
             }
+            await axios.get('http://localhost:3000/users/getDownloads', { headers: { "Authorization": token } })
+                .then(response => {
+                    const files = response.data.response;
+                    downloadsHead.appendChild(document.createTextNode('Downloaded files'));
+                    files.forEach((file) => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = file.url;
+                        a.appendChild(document.createTextNode(`    Download file again`))
+                        console.log(file);
+                        li.appendChild(document.createTextNode(`${file.file_name}`));
+                        li.appendChild(a);
+                        downloadList.appendChild(li);
+                    })
+
+                })
+                .catch(err => {
+                    throw new Error(err);
+                })
         }
     }
     catch (err) {
@@ -250,6 +272,39 @@ document.getElementById('razorpayBtn').onclick = async function (e) {
     }
     catch(err){
         throw new Error(err);
+    }
+}
+
+reportButton.onclick = async (e) => {
+    try {
+        e.preventDefault();
+        const response = await axios.get('http://localhost:3000/purchase/premiumOrNot', { headers: { "Authorization": token } });
+        const isPremium = response.data.isPremium;
+        if (isPremium === 'true') {
+            await axios.get('http://localhost:3000/users/download', { headers: { "Authorization": token } })
+                .then((response)=>{
+                    if(response.status===200){
+                        // Here the backend will send a download link which as soon as opened will
+                        // download the file
+                        var a =document.createElement('a');
+                        a.href=response.data.fileUrl;
+                        // downloading it with name myexpense.csv
+                        a.download='myexpense.csv';
+                        a.click();
+                    } else{
+                        throw new Error
+                    }
+                })
+                .catch((err)=>{
+                    console.log(err);
+                });
+        }
+        else {
+            alert('Download report function is available for premium users only');
+        }
+    }
+    catch (err) {
+        console.log(err);
     }
 }
 

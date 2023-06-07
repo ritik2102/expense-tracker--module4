@@ -1,3 +1,6 @@
+a{
+    text-decoration:none;
+}
 nav{
     display:grid;
     grid-template-columns: repeat(8,1fr);
@@ -10,7 +13,7 @@ nav{
 
 body{
     display:grid;
-    grid-template-rows: 0.5fr 3fr 1.3fr 0.5fr;
+    grid-template-rows: 0.5fr auto 1.3fr 0.7fr;
 }
 .nav-button{
     width: 80%;
@@ -43,7 +46,7 @@ body{
 
 .main-section{
     display:grid;
-    grid-template-rows:1fr 1fr ;
+    grid-template-rows:auto auto ;
 }
 
 
@@ -73,6 +76,10 @@ button{
     background-color:#41644A;
 }
 
+.form-list{
+    display:grid;
+    grid-template-rows:auto auto auto;
+}
 table{
     position:relative;
     margin: 0 auto;
@@ -95,8 +102,8 @@ td{
     padding-right:15%;
 }
 #report-button{
-    width:60px;
-    height:60px;
+    width:75px;
+    height:75px;
     border-radius:50%;
 
 }
@@ -159,6 +166,17 @@ td{
     padding:3px;
     color:antiquewhite;
     background-color: #41644A;
+}
+#downloads-head{
+    position:relative;
+    margin: auto;
+    text-align:center;
+}
+#download-list{
+    text-align:center;
+    list-style-type:none;
+    margin-top:15px;
+    font-size:1.5vw;
 }
 
 footer{

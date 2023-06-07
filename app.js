@@ -26,6 +26,7 @@ const User=require('./model/user');
 const Expense=require('./model/expense');
 const Order=require('./model/order');
 const ForgotPasswordRequests=require('./model/forgot-password-requests');
+const Downloads=require('./model/downloads')
 
 User.hasMany(ForgotPasswordRequests);
 ForgotPasswordRequests.belongsTo(User);
@@ -35,6 +36,9 @@ Expense.belongsTo(User,{constraints:true,onDelete:'CASCADE'});
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(Downloads);
+Downloads.belongsTo(User);
 
 // {force:true}
 sequelize.sync()
