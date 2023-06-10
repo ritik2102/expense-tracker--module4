@@ -144,6 +144,18 @@ td{
     width:80px;
     height:30px;
 }
+.pagination-button{
+    width:30px;
+    height:30px;
+    background-color: #609966;
+    margin:5px;
+}
+.pagination-button-current{
+    width:35px;
+    height:35px;
+    margin:5px;
+    /* margin-bottom:10px; */
+}
 
 #leaderboardList{
     text-align:center;

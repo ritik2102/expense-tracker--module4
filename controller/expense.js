@@ -55,7 +55,7 @@ exports.postSalary = async (req, res, next) => {
         const price = req.body.price;
         const category = req.body.category;
         console.log("Working fine uptil here");
-        Expense.create({ userId: req.user.id,price: price, category: category, date: date, month: month, year: year })
+        Expense.create({ userId: req.user.id, price: price, category: category, date: date, month: month, year: year })
             .then(expense => {
                 console.log('working');
                 res.status(201).json({ resData: "success" });
@@ -72,15 +72,105 @@ exports.postSalary = async (req, res, next) => {
 }
 
 exports.getExpenses = (req, res, next) => {
-
     try {
-        Expense.findAll({ where: { userId: req.user.id } })
-            .then(expenses => {
-                res.status(201).json({ resData: expenses });
+        // if date exists
+        if (req.query.date) {
+            const page = +req.query.page;
+            const date = req.query.date;
+            const month = +req.query.month - 1;
+            const year = req.query.year;
+            let totalItems;
+            Expense.count({where: { userId: req.user.id, date: date, month: month, year: year }})
+                .then(total=>{
+                    totalItems=total;
+                })
+                .catch(err=>console.log(err))
+
+            Expense.findAll({
+                where: { userId: req.user.id, date: date, month: month, year: year },
+                offset: (page - 1) * 10,
+                limit: 10
             })
-            .catch(err => {
-                console.log(err);
-            });
+                .then(expenses => {
+                    res.status(201).json({
+                        response: expenses,
+                        currentPage: page,
+                        hasNextPage:( 10 * page )< totalItems,
+                        nextPage: page + 1,
+                        hasPreviousPage: page > 1,
+                        previousPage: page - 1,
+                        lastPage: Math.ceil(totalItems / 10)
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+        // if date not exists but month exists
+        else if (req.query.month) {
+
+
+            const page = +req.query.page;
+            const month = +req.query.month - 1;
+            const year = req.query.year;
+            let totalItems;
+            Expense.count({where: { userId: req.user.id,  month: month, year: year }})
+                .then(total=>{
+                    totalItems=total;
+                })
+                .catch(err=>console.log(err))
+
+            Expense.findAll({
+                where: { userId: req.user.id, month: month, year: year },
+                offset: (page - 1) * 10,
+                limit: 10
+            })
+                .then(expenses => {
+                    res.status(201).json({
+                        response: expenses,
+                        currentPage: page,
+                        hasNextPage: 10 * page < totalItems,
+                        nextPage: page + 1,
+                        hasPreviousPage: page > 1,
+                        previousPage: page - 1,
+                        lastPage: Math.ceil(totalItems / 10)
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+        // if only year exists in req.query
+        else {
+            const page = +req.query.page;
+            const year = req.query.year;
+            let totalItems;
+            Expense.count({where: { userId: req.user.id,year: year }})
+                .then(total=>{
+                    totalItems=total;
+                })
+                .catch(err=>console.log(err))
+                
+            Expense.findAll({
+                where: { userId: req.user.id, year: year },
+                offset: (page - 1) * 10,
+                limit: 10
+            })
+                .then(expenses => {
+                    res.status(201).json({
+                        response: expenses,
+                        currentPage: page,
+                        hasNextPage: 10 * page < totalItems,
+                        nextPage: page + 1,
+                        hasPreviousPage: page > 1,
+                        previousPage: page - 1,
+                        lastPage: Math.ceil(totalItems / 10)
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
     }
     catch (err) {
         throw new Error(err);
@@ -126,10 +216,10 @@ exports.deleteSalary = async (req, res, next) => {
     try {
         const id = req.params.id;
 
-        Expense.findAll({ where: { id: id, userId: req.user.id }})
+        Expense.findAll({ where: { id: id, userId: req.user.id } })
             .then(expense => {
                 expense[0].destroy();
-                return res.status(201).json({resData:"success"});
+                return res.status(201).json({ resData: "success" });
             })
             .catch(async (err) => {
                 return res.status(500).json({ 'success': false })

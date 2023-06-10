@@ -12,7 +12,7 @@ require('dotenv').config();
 exports.getDownloads=async(req,res,next)=>{
     try{
         const downloads=await req.user.getDownloads();
-        console.log(downloads);
+        // console.log(downloads);
         res.status(200).json({response:downloads});
     } catch(err){
         console.log(err);

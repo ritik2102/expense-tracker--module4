@@ -28,7 +28,7 @@ exports.passwordReset = async (req, res, next) => {
             port: 587,
             auth: {
                 user: "ritik21feb@gmail.com",
-                pass: process.env.BREVO_SMTP_KEY,
+                pass: `${process.env.BREVO_SMTP_KEY}4XNKyaVYjcvpdhZn`,
             },
         });
 

@@ -3,51 +3,131 @@ const razorpayBtn = document.getElementById('razorpayBtn');
 const token = localStorage.getItem('token');
 const leaderboardList = document.getElementById('leaderboardList');
 const yearField = document.getElementById('year-field');
-const expensesHeading=document.getElementById('expenses-heading');
+const expensesHeading = document.getElementById('expenses-heading');
 const expenseTable = document.getElementById('expense-table');
+const pagination = document.getElementById('pagination');
 const reportButton = document.getElementById('report-button');
 const downloadList = document.getElementById('download-list');
 const downloadsHead = document.getElementById('downloads-head');
+
+const dateHead = document.getElementById('date-head');
+const netMoneyField = document.getElementById('net-money');
+
+
+function expenseDataHandler(response) {
+    try {
+        let netExpenses = 0;
+        let netSavings = 0;
+        let i = -1;
+        response.forEach((record) => {
+            i++;
+
+            if (record.name === null) {
+                netSavings += record.price;
+            }
+            else {
+                netExpenses += record.price;
+            }
+            logData(record, i);
+        });
+        // showPagination(pageData);
+
+        const netMoney = document.createElement('h2');
+        if (netSavings - netExpenses >= 0) {
+            netMoney.appendChild(document.createTextNode(`Net savings- ${netSavings - netExpenses}`));
+        }
+        else {
+            netMoney.appendChild(document.createTextNode(`Net expenses- ${netExpenses - netSavings}`));
+        }
+        const netMoneyField = document.getElementById('net-money');
+        netMoneyField.appendChild(netMoney);
+    } catch (err) {
+        console.log(err);
+    }
+}
+async function getProducts(page) {
+
+    try {
+        expenseTable.innerHTML = '';
+        dateHead.innerHTML = '';
+        netMoneyField.innerHTML = '';
+        expenseTable.innerHTML += '<th>Date</th><th>Description</th><th>Category</th><th>Income</th><th>Expense</th>';
+        const year = yearField.value;
+
+        const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+
+        dateHead.appendChild(document.createTextNode(`${year}`));
+
+        const lineBreak = document.createElement('br');
+        expensesHeading.appendChild(lineBreak);
+
+        await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&year=${year}`, { headers: { "Authorization": token } })
+            .then(({ data: { response, ...pageData } }) => {
+                expenseDataHandler(response);
+                showPagination(pageData);
+            })
+            .catch(err => console.log(err))
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage }) {
+
+    pagination.innerHTML = '';
+
+    // previous page
+    if (hasPreviousPage) {
+        const btn = document.createElement('button');
+        btn.innerHTML = previousPage;
+        btn.classList.add('pagination-button');
+        btn.addEventListener('click', () => {
+            getProducts(previousPage);
+        })
+        pagination.appendChild(btn);
+    }
+
+    // current page
+    const btn1 = document.createElement('button');
+    btn1.innerHTML = currentPage;
+    btn1.classList.add('pagination-button-current');
+    btn1.addEventListener('click', () => {
+        getProducts(currentPage);
+    })
+    pagination.appendChild(btn1);
+
+
+    // next page
+    if (hasNextPage) {
+        const btn2 = document.createElement('button');
+        btn2.innerHTML = nextPage;
+        btn2.classList.add('pagination-button');
+        btn2.addEventListener('click', () => {
+            getProducts(nextPage);
+        })
+        pagination.appendChild(btn2);
+    }
+}
 
 async function getExpenses(e) {
 
     e.preventDefault();
     const year = yearField.value;
 
-    const dateHead=document.createElement('p');
     dateHead.appendChild(document.createTextNode(`${year}`));
-    
-    const lineBreak=document.createElement('br');
+
+    const lineBreak = document.createElement('br');
     expensesHeading.appendChild(lineBreak);
-    expensesHeading.appendChild(dateHead);
 
-    const res = await axios.get('http://localhost:3000/expense/get-expense', { headers: { "Authorization": token } });
 
-    let netExpenses=0;
-    let netSavings=0;
-    let i = -1;
-    res.data.resData.forEach((record) => {
-        i++;
-
-        if (Number(record.year) === Number(year) ) {
-            if(record.name===null){
-                netSavings+=record.price;
-            }
-            else{
-                netExpenses+=record.price;
-            }
-            logData(record, i);
-        }
-    });
-    const netMoney=document.createElement('h2');
-    if(netSavings-netExpenses>=0){
-        netMoney.appendChild(document.createTextNode(`Net savings- ${netSavings-netExpenses}`));
-    }
-    else{
-        netMoney.appendChild(document.createTextNode(`Net expenses- ${netExpenses-netSavings}`));
-    }
-    const netMoneyField=document.getElementById('net-money');
-    netMoneyField.appendChild(netMoney);
+    const page = 1;
+    await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&year=${year}`, { headers: { "Authorization": token } })
+        .then(({ data: { response, ...pageData } }) => {
+            // console.log(response);
+            expenseDataHandler(response);
+            showPagination(pageData);
+        })
+        .catch(err => console.log(err))
 
 }
 
@@ -58,11 +138,11 @@ function logData(record, i) {
         const name = record.name;
         const category = record.category;
         const id = record.id;
-        const date=record.date;
-        const month=record.month;
-        const monthName=['Jan','Feb','Mar','Apr','May','Jun','July','Aug','Sept','Oct','Nov','Dec'];
+        const date = record.date;
+        const month = record.month;
+        const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
         const tableRow = document.createElement('tr');
-        const deleteData=document.createElement('td');
+        const deleteData = document.createElement('td');
         deleteData.classList.add('delete-field');
 
         if (name === null) {
@@ -115,13 +195,13 @@ function logData(record, i) {
         deleteButton.onclick = async () => {
             try {
                 let res;
-                if(name===null){
+                if (name === null) {
                     res = await axios.post(`http://localhost:3000/expense/delete-salary/${id}`, '', { headers: { "Authorization": token } });
                 }
-                else{
+                else {
                     res = await axios.post(`http://localhost:3000/expense/delete-expense/${id}`, '', { headers: { "Authorization": token } });
                 }
-                if(res.data.resData==='success'){
+                if (res.data.resData === 'success') {
                     expenseTable.removeChild(tableRow);
                 }
             }
@@ -139,70 +219,6 @@ function logData(record, i) {
 
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await axios.get('http://localhost:3000/purchase/premiumOrNot', { headers: { "Authorization": token } });
-        const isPremium = response.data.isPremium;
-        if (isPremium === 'true') {
-            razorpayBtn.innerHTML = 'Premium User 👑';
-            razorpayBtn.classList.add('premiumButton');
-
-            const boardButton = document.getElementById('leader-board');
-            boardButton.classList.add('boardButton');
-
-            boardButton.onclick= async function (e) {
-
-                e.preventDefault();
-                const res = await axios.get('http://localhost:3000/premium/getLeaderboard', { headers: { "Authorization": token } });
-                const data = res.data.resData;
-
-                const heading = document.createElement('h2');
-                heading.appendChild(document.createTextNode('Leaderboard'));
-                leaderboardList.appendChild(heading);
-                for (let i = 0; i < data.length; i++) {
-                    const li = document.createElement('li');
-                    if (i % 2 === 0) {
-                        li.classList.add('leaderboard-list-item-even')
-                    }
-                    else {
-                        li.classList.add('leaderboard-list-item-odd')
-                    }
-                    li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_expense}`));
-                    leaderboardList.appendChild(li);
-                }
-            }
-            await axios.get('http://localhost:3000/users/getDownloads', { headers: { "Authorization": token } })
-                .then(response => {
-                    const files = response.data.response;
-                    downloadsHead.appendChild(document.createTextNode('Downloaded files'));
-                    files.forEach((file) => {
-                        const li = document.createElement('li');
-                        const a = document.createElement('a');
-                        a.href = file.url;
-                        a.appendChild(document.createTextNode(`    Download file again`))
-                        console.log(file);
-                        li.appendChild(document.createTextNode(`${file.file_name}`));
-                        li.appendChild(a);
-                        downloadList.appendChild(li);
-                    })
-
-                })
-                .catch(err => {
-                    throw new Error(err);
-                })
-        }
-    }
-    catch (err) {
-        console.log(err);
-    }
-})
-
-window.addEventListener('DOMContentLoaded', async () => {
-    try {
-
-        const expenseHeading = document.createElement('h2');
-        expenseHeading.appendChild(document.createTextNode('Expenses'));
-        expenseHeading.classList.add('expense-header');
-        expenseList.appendChild(expenseHeading);
-
         const response = await axios.get('http://localhost:3000/purchase/premiumOrNot', { headers: { "Authorization": token } });
         const isPremium = response.data.isPremium;
         if (isPremium === 'true') {
@@ -233,12 +249,70 @@ window.addEventListener('DOMContentLoaded', async () => {
                     leaderboardList.appendChild(li);
                 }
             }
+            await axios.get('http://localhost:3000/users/getDownloads', { headers: { "Authorization": token } })
+                .then(response => {
+                    const files = response.data.response;
+                    downloadsHead.appendChild(document.createTextNode('Downloaded files'));
+                    files.forEach((file) => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = file.url;
+                        a.appendChild(document.createTextNode(`    Download file again`))
+                        li.appendChild(document.createTextNode(`${file.file_name}`));
+                        li.appendChild(a);
+                        downloadList.appendChild(li);
+                    })
+
+                })
+                .catch(err => {
+                    throw new Error(err);
+                })
         }
     }
     catch (err) {
         console.log(err);
     }
-});
+})
+
+// window.addEventListener('DOMContentLoaded', async () => {
+//     try {
+
+//         const response = await axios.get('http://localhost:3000/purchase/premiumOrNot', { headers: { "Authorization": token } });
+//         const isPremium = response.data.isPremium;
+//         if (isPremium === 'true') {
+//             razorpayBtn.innerHTML = 'Premium User 👑';
+//             razorpayBtn.classList.add('premiumButton');
+
+//             const boardButton = document.getElementById('leader-board');
+//             boardButton.classList.add('boardButton');
+
+//             boardButton.onclick = async function (e) {
+
+//                 e.preventDefault();
+//                 const res = await axios.get('http://localhost:3000/premium/getLeaderboard', { headers: { "Authorization": token } });
+//                 const data = res.data.resData;
+
+//                 const heading = document.createElement('h2');
+//                 heading.appendChild(document.createTextNode('Leaderboard'));
+//                 leaderboardList.appendChild(heading);
+//                 for (let i = 0; i < data.length; i++) {
+//                     const li = document.createElement('li');
+//                     if (i % 2 === 0) {
+//                         li.classList.add('leaderboard-list-item-even')
+//                     }
+//                     else {
+//                         li.classList.add('leaderboard-list-item-odd')
+//                     }
+//                     li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_expense}`));
+//                     leaderboardList.appendChild(li);
+//                 }
+//             }
+//         }
+//     }
+//     catch (err) {
+//         console.log(err);
+//     }
+// });
 
 
 document.getElementById('razorpayBtn').onclick = async function (e) {
@@ -270,7 +344,7 @@ document.getElementById('razorpayBtn').onclick = async function (e) {
             alert("Something went wrong");
         });
     }
-    catch(err){
+    catch (err) {
         throw new Error(err);
     }
 }
@@ -282,20 +356,20 @@ reportButton.onclick = async (e) => {
         const isPremium = response.data.isPremium;
         if (isPremium === 'true') {
             await axios.get('http://localhost:3000/users/download', { headers: { "Authorization": token } })
-                .then((response)=>{
-                    if(response.status===200){
+                .then((response) => {
+                    if (response.status === 200) {
                         // Here the backend will send a download link which as soon as opened will
                         // download the file
-                        var a =document.createElement('a');
-                        a.href=response.data.fileUrl;
+                        var a = document.createElement('a');
+                        a.href = response.data.fileUrl;
                         // downloading it with name myexpense.csv
-                        a.download='myexpense.csv';
+                        a.download = 'myexpense.csv';
                         a.click();
-                    } else{
+                    } else {
                         throw new Error
                     }
                 })
-                .catch((err)=>{
+                .catch((err) => {
                     console.log(err);
                 });
         }

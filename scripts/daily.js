@@ -6,12 +6,116 @@ const monthField = document.getElementById('month-field');
 const yearField = document.getElementById('year-field');
 const expensesHeading = document.getElementById('expenses-heading');
 const expenseTable = document.getElementById('expense-table');
+const pagination = document.getElementById('pagination');
 const reportButton = document.getElementById('report-button');
 const downloadList = document.getElementById('download-list');
 const downloadsHead = document.getElementById('downloads-head');
 
+const dateHead = document.getElementById('date-head');
+const netMoneyField = document.getElementById('net-money');
+        
+
 
 const leaderboardList = document.getElementById('leaderboardList');
+
+function expenseDataHandler(response) {
+    try {
+        let netExpenses = 0;
+        let netSavings = 0;
+        let i = -1;
+        response.forEach((record) => {
+            i++;
+
+            if (record.name === null) {
+                netSavings += record.price;
+            }
+            else {
+                netExpenses += record.price;
+            }
+            logData(record, i);
+        });
+        // showPagination(pageData);
+
+        const netMoney = document.createElement('h2');
+        if (netSavings - netExpenses >= 0) {
+            netMoney.appendChild(document.createTextNode(`Net savings- ${netSavings - netExpenses}`));
+        }
+        else {
+            netMoney.appendChild(document.createTextNode(`Net expenses- ${netExpenses - netSavings}`));
+        }
+        
+        netMoneyField.appendChild(netMoney);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function getProducts(page) {
+
+    try {
+        expenseTable.innerHTML='';
+        dateHead.innerHTML='';
+        netMoneyField.innerHTML='';
+        
+        expenseTable.innerHTML+='<th>Description</th><th>Category</th><th>Income</th><th>Expense</th>';
+        const date = dateField.value;
+        const month = monthField.value
+        const year = yearField.value;
+
+        const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+
+        dateHead.appendChild(document.createTextNode(`${date} ${monthName[month]} ${year}`));
+
+        const lineBreak = document.createElement('br');
+        expensesHeading.appendChild(lineBreak);
+
+        await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&date=${date}&&month=${month}&&year=${year}`, { headers: { "Authorization": token } })
+            .then(({ data: { response, ...pageData } }) => {
+                expenseDataHandler(response);
+                showPagination(pageData);
+            })
+            .catch(err => console.log(err))
+    } catch (err) {
+        console.log(err);
+    }
+}
+async function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage }) {
+
+    console.log(currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage);
+    pagination.innerHTML = '';
+
+    // previous page
+    if (hasPreviousPage) {
+        const btn = document.createElement('button');
+        btn.innerHTML = previousPage;
+        btn.classList.add('pagination-button');
+        btn.addEventListener('click', () => {
+            getProducts(previousPage);
+        })
+        pagination.appendChild(btn);
+    }
+
+    // current page
+    const btn1 = document.createElement('button');
+    btn1.innerHTML = currentPage;
+    btn1.classList.add('pagination-button-current');
+    btn1.addEventListener('click', () => {
+        getProducts(currentPage);
+    })
+    pagination.appendChild(btn1);
+
+
+    // next page
+    if (hasNextPage) {
+        const btn2 = document.createElement('button');
+        btn2.innerHTML = nextPage;
+        btn2.classList.add('pagination-button');
+        btn2.addEventListener('click', () => {
+            getProducts(nextPage);
+        })
+        pagination.appendChild(btn2);
+    }
+}
 
 async function getExpenses(e) {
 
@@ -23,40 +127,20 @@ async function getExpenses(e) {
 
     const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
-    const dateHead = document.createElement('p');
     dateHead.appendChild(document.createTextNode(`${date} ${monthName[month]} ${year}`));
 
     const lineBreak = document.createElement('br');
     expensesHeading.appendChild(lineBreak);
-    expensesHeading.appendChild(dateHead);
+    // expensesHeading.appendChild(dateHead);
 
-    const res = await axios.get('http://localhost:3000/expense/get-expense', { headers: { "Authorization": token } });
-
-    let netExpenses = 0;
-    let netSavings = 0;
-    let i = -1;
-    res.data.resData.forEach((record) => {
-        i++;
-
-        if (Number(record.date) === Number(date) && Number(record.month) + 1 === Number(month) && Number(record.year) === Number(year)) {
-            if (record.name === null) {
-                netSavings += record.price;
-            }
-            else {
-                netExpenses += record.price;
-            }
-            logData(record, i);
-        }
-    });
-    const netMoney = document.createElement('h2');
-    if (netSavings - netExpenses >= 0) {
-        netMoney.appendChild(document.createTextNode(`Net savings- ${netSavings - netExpenses}`));
-    }
-    else {
-        netMoney.appendChild(document.createTextNode(`Net expenses- ${netExpenses - netSavings}`));
-    }
-    const netMoneyField = document.getElementById('net-money');
-    netMoneyField.appendChild(netMoney);
+    const page = 1;
+    await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&date=${date}&&month=${month}&&year=${year}`, { headers: { "Authorization": token } })
+        .then(({ data: { response, ...pageData } }) => {
+            expenseDataHandler(response);
+            console.log(pageData);
+            showPagination(pageData);
+        })
+        .catch(err => console.log(err))
 
 }
 
