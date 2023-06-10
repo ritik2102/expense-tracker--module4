@@ -13,6 +13,27 @@ const downloadsHead = document.getElementById('downloads-head');
 const dateHead = document.getElementById('date-head');
 const netMoneyField = document.getElementById('net-money');
 
+const numberFieldsButton = document.getElementById('number-fields-submit');
+const numberFields = document.getElementById('number-fields');
+
+let numRows = localStorage.getItem('numRows');
+
+if (!numRows) {
+    localStorage.setItem('numRows', 10);
+}
+
+numberFieldsButton.onclick = async (e) => {
+    try {
+        e.preventDefault();
+        const num = numberFields.value;
+        localStorage.setItem('numRows', num);
+        numRows = num;
+        getProducts(1);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
 
 function expenseDataHandler(response) {
     try {
@@ -58,10 +79,7 @@ async function getProducts(page) {
 
         dateHead.appendChild(document.createTextNode(`${year}`));
 
-        const lineBreak = document.createElement('br');
-        expensesHeading.appendChild(lineBreak);
-
-        await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&year=${year}`, { headers: { "Authorization": token } })
+        await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&year=${year}&&numRows=${numRows}`, { headers: { "Authorization": token } })
             .then(({ data: { response, ...pageData } }) => {
                 expenseDataHandler(response);
                 showPagination(pageData);
@@ -78,6 +96,17 @@ async function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousP
 
     // previous page
     if (hasPreviousPage) {
+        if (previousPage !== 1) {
+            const btn3 = document.createElement('button');
+            btn3.innerHTML = '1';
+            btn3.classList.add('pagination-button');
+            btn3.addEventListener('click', () => {
+                getProducts(1);
+            })
+            pagination.appendChild(btn3);
+            pagination.appendChild(document.createTextNode('..'));
+
+        }
         const btn = document.createElement('button');
         btn.innerHTML = previousPage;
         btn.classList.add('pagination-button');
@@ -85,6 +114,7 @@ async function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousP
             getProducts(previousPage);
         })
         pagination.appendChild(btn);
+
     }
 
     // current page
@@ -106,6 +136,16 @@ async function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousP
             getProducts(nextPage);
         })
         pagination.appendChild(btn2);
+        if (nextPage !== lastPage) {
+            const btn4 = document.createElement('button');
+            btn4.innerHTML = lastPage;
+            btn4.classList.add('pagination-button');
+            btn4.addEventListener('click', () => {
+                getProducts(lastPage);
+            })
+            pagination.appendChild(document.createTextNode('..'));
+            pagination.appendChild(btn4);
+        }
     }
 }
 
@@ -116,12 +156,8 @@ async function getExpenses(e) {
 
     dateHead.appendChild(document.createTextNode(`${year}`));
 
-    const lineBreak = document.createElement('br');
-    expensesHeading.appendChild(lineBreak);
-
-
     const page = 1;
-    await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&year=${year}`, { headers: { "Authorization": token } })
+    await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&year=${year}&&numRows=${numRows}`, { headers: { "Authorization": token } })
         .then(({ data: { response, ...pageData } }) => {
             // console.log(response);
             expenseDataHandler(response);

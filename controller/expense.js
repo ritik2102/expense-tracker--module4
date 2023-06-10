@@ -79,6 +79,8 @@ exports.getExpenses = (req, res, next) => {
             const date = req.query.date;
             const month = +req.query.month - 1;
             const year = req.query.year;
+            const numRows=+req.query.numRows;
+
             let totalItems;
             Expense.count({where: { userId: req.user.id, date: date, month: month, year: year }})
                 .then(total=>{
@@ -88,18 +90,19 @@ exports.getExpenses = (req, res, next) => {
 
             Expense.findAll({
                 where: { userId: req.user.id, date: date, month: month, year: year },
-                offset: (page - 1) * 10,
-                limit: 10
+                offset: (page - 1) * numRows,
+                limit: numRows
             })
                 .then(expenses => {
+                    console.log(totalItems,numRows);
                     res.status(201).json({
                         response: expenses,
                         currentPage: page,
-                        hasNextPage:( 10 * page )< totalItems,
+                        hasNextPage:( numRows * page )< totalItems,
                         nextPage: page + 1,
                         hasPreviousPage: page > 1,
                         previousPage: page - 1,
-                        lastPage: Math.ceil(totalItems / 10)
+                        lastPage: Math.ceil(totalItems / numRows)
                     });
                 })
                 .catch(err => {
@@ -113,6 +116,7 @@ exports.getExpenses = (req, res, next) => {
             const page = +req.query.page;
             const month = +req.query.month - 1;
             const year = req.query.year;
+            const numRows=+req.query.numRows;
             let totalItems;
             Expense.count({where: { userId: req.user.id,  month: month, year: year }})
                 .then(total=>{
@@ -122,18 +126,18 @@ exports.getExpenses = (req, res, next) => {
 
             Expense.findAll({
                 where: { userId: req.user.id, month: month, year: year },
-                offset: (page - 1) * 10,
-                limit: 10
+                offset: (page - 1) * numRows,
+                limit: numRows
             })
                 .then(expenses => {
                     res.status(201).json({
                         response: expenses,
                         currentPage: page,
-                        hasNextPage: 10 * page < totalItems,
+                        hasNextPage: numRows * page < totalItems,
                         nextPage: page + 1,
                         hasPreviousPage: page > 1,
                         previousPage: page - 1,
-                        lastPage: Math.ceil(totalItems / 10)
+                        lastPage: Math.ceil(totalItems / numRows)
                     });
                 })
                 .catch(err => {
@@ -144,6 +148,7 @@ exports.getExpenses = (req, res, next) => {
         else {
             const page = +req.query.page;
             const year = req.query.year;
+            const numRows=+req.query.numRows;
             let totalItems;
             Expense.count({where: { userId: req.user.id,year: year }})
                 .then(total=>{
@@ -153,18 +158,18 @@ exports.getExpenses = (req, res, next) => {
                 
             Expense.findAll({
                 where: { userId: req.user.id, year: year },
-                offset: (page - 1) * 10,
-                limit: 10
+                offset: (page - 1) * numRows,
+                limit: numRows
             })
                 .then(expenses => {
                     res.status(201).json({
                         response: expenses,
                         currentPage: page,
-                        hasNextPage: 10 * page < totalItems,
+                        hasNextPage: numRows * page < totalItems,
                         nextPage: page + 1,
                         hasPreviousPage: page > 1,
                         previousPage: page - 1,
-                        lastPage: Math.ceil(totalItems / 10)
+                        lastPage: Math.ceil(totalItems / numRows)
                     });
                 })
                 .catch(err => {

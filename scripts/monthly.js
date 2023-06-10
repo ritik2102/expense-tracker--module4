@@ -14,6 +14,28 @@ const downloadsHead = document.getElementById('downloads-head');
 const dateHead = document.getElementById('date-head');
 const netMoneyField = document.getElementById('net-money');
 
+const numberFieldsButton=document.getElementById('number-fields-submit');
+const numberFields=document.getElementById('number-fields');
+
+let numRows=localStorage.getItem('numRows');
+
+if(!numRows){
+    localStorage.setItem('numRows',10);
+}
+
+numberFieldsButton.onclick=async(e)=>{
+    try{
+        e.preventDefault();
+        const num=numberFields.value;
+        localStorage.setItem('numRows',num);
+        numRows=num;
+        getProducts(1);
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
 function expenseDataHandler(response) {
     try {
         let netExpenses = 0;
@@ -60,10 +82,7 @@ async function getProducts(page) {
 
         dateHead.appendChild(document.createTextNode(`${monthName[month]} ${year}`));
 
-        const lineBreak = document.createElement('br');
-        expensesHeading.appendChild(lineBreak);
-
-        await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&month=${month}&&year=${year}`, { headers: { "Authorization": token } })
+        await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&month=${month}&&year=${year}&&numRows=${numRows}`, { headers: { "Authorization": token } })
             .then(({ data: { response, ...pageData } }) => {
                 expenseDataHandler(response);
                 showPagination(pageData);
@@ -76,11 +95,21 @@ async function getProducts(page) {
 
 async function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage }) {
 
-    console.log(currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage);
     pagination.innerHTML = '';
 
     // previous page
     if (hasPreviousPage) {
+        if (previousPage !== 1) {
+            const btn3 = document.createElement('button');
+            btn3.innerHTML = '1';
+            btn3.classList.add('pagination-button');
+            btn3.addEventListener('click', () => {
+                getProducts(1);
+            })
+            pagination.appendChild(btn3);
+            pagination.appendChild(document.createTextNode('..'));
+            
+        }
         const btn = document.createElement('button');
         btn.innerHTML = previousPage;
         btn.classList.add('pagination-button');
@@ -88,6 +117,7 @@ async function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousP
             getProducts(previousPage);
         })
         pagination.appendChild(btn);
+        
     }
 
     // current page
@@ -109,6 +139,16 @@ async function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousP
             getProducts(nextPage);
         })
         pagination.appendChild(btn2);
+        if (nextPage !== lastPage) {
+            const btn4 = document.createElement('button');
+            btn4.innerHTML = lastPage;
+            btn4.classList.add('pagination-button');
+            btn4.addEventListener('click', () => {
+                getProducts(lastPage);
+            })
+            pagination.appendChild(document.createTextNode('..'));
+            pagination.appendChild(btn4);
+        }
     }
 }
 async function getExpenses(e) {
@@ -119,13 +159,11 @@ async function getExpenses(e) {
     const year = yearField.value;
     const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
-    dateHead.appendChild(document.createTextNode(`${monthName[month]} ${year}`));
-
-    const lineBreak = document.createElement('br');
-    expensesHeading.appendChild(lineBreak);
+    const monthIndex=month-1;
+    dateHead.appendChild(document.createTextNode(`${monthName[monthIndex]} ${year}`));
 
     const page = 1;
-    await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&month=${month}&&year=${year}`, { headers: { "Authorization": token } })
+    await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&&month=${month}&&year=${year}&&numRows=${numRows}`, { headers: { "Authorization": token } })
         .then(({ data: { response, ...pageData } }) => {
             expenseDataHandler(response);
             showPagination(pageData);
@@ -260,7 +298,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                         const a = document.createElement('a');
                         a.href = file.url;
                         a.appendChild(document.createTextNode(`    Download file again`))
-                        console.log(file);
                         li.appendChild(document.createTextNode(`${file.file_name}`));
                         li.appendChild(a);
                         downloadList.appendChild(li);

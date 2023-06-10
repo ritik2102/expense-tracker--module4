@@ -52,9 +52,6 @@
                     <input placeholder="year" id="year-field" type="number">
                     <button class="button-get-expense" onclick="getExpenses(event)" type="submit">Submit</button>
                 </form>
-                <!-- <ul id="expense-list"> -->
-                <!--                 
-                </ul> -->
                 <h2 id="date-head"></h2>
                 <h1 id="expenses-heading">Expenses</h1>
                 <table id="expense-table">
@@ -65,6 +62,14 @@
                 </table>
                 <p id="net-money"></p>
                 <div id="pagination"></div>
+                <div class="number-rows-section">
+                    <form id="number-expenses-form" action="">
+                        <label for="number-fields" id="number-fields-label">Number of rows:</label>
+                        <input id="number-fields" type="number">
+                        <button type="submit" id="number-fields-submit">Get</button>
+                    </form>
+                </div>
+                
                 <div class="report-container">
                     <button id="report-button">Download</button>
                 </div>

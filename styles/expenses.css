@@ -109,7 +109,10 @@ td{
 }
 .expenses{
     text-align:center;
+    display:grid;
+    grid-template-rows:repeat(8,auto);
 }
+
 .expense-list-odd{
     position:relative;
     margin:0 auto;
@@ -144,6 +147,9 @@ td{
     width:80px;
     height:30px;
 }
+#net-money{
+    margin-left:40%;
+}
 .pagination-button{
     width:30px;
     height:30px;
@@ -155,6 +161,27 @@ td{
     height:35px;
     margin:5px;
     /* margin-bottom:10px; */
+}
+.number-rows-section{
+   text-align:center;
+}
+#number-expenses-form{
+    text-align:center;
+}
+#number-fields-label{
+    font-weight:900;
+}
+#number-fields{
+    width: 50px;
+    height:20px;
+    position:relative;
+    margin:0 auto;
+}
+#number-fields-submit{
+    margin-top:10px;
+    margin-left:10px;
+    height:24px;
+    width:40px;
 }
 
 #leaderboardList{
