@@ -13,7 +13,7 @@ nav{
 
 body{
     display:grid;
-    grid-template-rows: 0.5fr auto 1.3fr 0.7fr;
+    grid-template-rows: 0.5fr auto 1.3fr auto;
 }
 .nav-button{
     width: 80%;
@@ -113,21 +113,6 @@ td{
     grid-template-rows:repeat(8,auto);
 }
 
-.expense-list-odd{
-    position:relative;
-    margin:0 auto;
-    width:30%;
-    padding:3px;
-    color:antiquewhite;
-    background-color: #41644A;
-}
-.expense-list-even{
-    position:relative;
-    margin:0 auto;
-    width:30%;
-    padding:3px;
-    background-color: #609966;
-}
 .expense-header{
     position:relative;
     margin:0 auto;
@@ -138,10 +123,7 @@ td{
     font-size:1.5vw;
     font:sans-serif;
 }
-/* .expenses{
-    position:relative;
-    margin:5px auto;
-} */
+
 
 .delete-button{
     width:80px;
@@ -184,28 +166,20 @@ td{
     width:40px;
 }
 
-#leaderboardList{
+#leaderboard-heading{
     text-align:center;
-    list-style-type:none;
-    font-size:1.5vw;
-    font:sans-serif;
+}
+#leaderboard-table{
+    margin-bottom:100px;
+}
+#leaderboard-head{
+    width:20vw;
+}
+.leaderboard-col{
+    width:20vw;
+    text-align:center;
 }
 
-.leaderboard-list-item-even{
-    position:relative;
-    margin:0 auto;
-    width:30%;
-    padding:3px;
-    background-color: #609966;
-}
-.leaderboard-list-item-odd{
-    position:relative;
-    margin:0 auto;
-    width:30%;
-    padding:3px;
-    color:antiquewhite;
-    background-color: #41644A;
-}
 #downloads-head{
     position:relative;
     margin: auto;
@@ -218,6 +192,9 @@ td{
     font-size:1.5vw;
 }
 
+#downloads-link{
+    font-weight:900;
+}
 footer{
     background-color:#41644A;
     display:grid;

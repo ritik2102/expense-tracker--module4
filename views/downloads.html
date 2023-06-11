@@ -44,43 +44,10 @@
                 you forgot which can really mess up the balance sheet. </h3>
             <img class="logo-img" src="https://media.giphy.com/media/l2YOp5fNAFMp63B3a/giphy.gif" alt="gif">
         </div>
-        <div class="form-list">
-            <div class="expenses">
-                <form action="">
-                    <input placeholder="date" id="date-field" type="number">
-                    <input placeholder="month" id="month-field" type="number">
-                    <input placeholder="year" id="year-field" type="number">
-                    <button class="button-get-expense" onclick="getExpenses(event)" type="submit">Submit</button>
-                </form>
-                <h2 id="date-head"></h2>
-                <h1 id="expenses-heading">Expenses</h1>
-                <table id="expense-table">
-                    <th>Description</th>
-                    <th>Category</th>
-                    <th>Income</th>
-                    <th>Expense</th>
-                </table>
-                <p id="net-money"></p>
-                <div id="pagination"></div>
-                <div class="number-rows-section">
-                    <form id="number-expenses-form" action="">
-                        <label for="number-fields" id="number-fields-label">Number of rows:</label>
-                        <input id="number-fields" type="number">
-                        <button type="submit" id="number-fields-submit">Get</button>
-                    </form>
-                </div>
-                
-                <div class="report-container">
-                    <button id="report-button">Download</button>
-                </div>
-            </div>
-            <h1 id="leaderboard-heading"></h1>
-            <table id="leaderboard-table">
-                    <th id="leaderboard-head">Rank</th>
-                    <th id="leaderboard-head">Name</th>
-                    <th id="leaderboard-head">Expenses</th>
-            </table>
-            <a style="text-align:center" id="downloads-link" href="downloads.html">Click here to see previously downloaded reports</a>
+        <div style="margin:70px 0;" class="form-list">
+            <h1 id="downloads-head"></h1>
+            <ul id="download-list">
+            </ul>
         </div>
     </main>
     <footer>
@@ -107,7 +74,7 @@
     </div>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
-    <script src="../scripts/daily.js"></script>
+    <script src="../scripts/downloads.js"></script>
 </body>
 
 </html>

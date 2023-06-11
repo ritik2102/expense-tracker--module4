@@ -47,8 +47,7 @@
                     <input placeholder="year" id="year-field" type="number">
                     <button class="button-get-expense" onclick="getExpenses(event)"type="submit">Submit</button>
                 </form>
-                <!-- <ul id="expense-list">
-                </ul> -->
+                
                 <h2 id="date-head"></h2>
                 <h1 id="expenses-heading">Expenses</h1>
                 <table id="expense-table">
@@ -71,11 +70,14 @@
                     <button id="report-button">PDF</button>
                 </div>
             </div>
-            <ul id="leaderboardList">
-            </ul>
-            <h1 id="downloads-head"></h1>
-            <ul id="download-list">
-            </ul>
+            <h1 id="leaderboard-heading"></h1>
+            <table id="leaderboard-table">
+                    <th id="leaderboard-head">Rank</th>
+                    <th id="leaderboard-head">Name</th>
+                    <th id="leaderboard-head">Expenses</th>
+            </table>
+            <a style="text-align:center" id="downloads-link" href="downloads.html">Click here to see previously downloaded reports</a>
+            <!-- </ul> -->
         </div>
     </main>
     <footer>

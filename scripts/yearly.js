@@ -18,6 +18,10 @@ const numberFields = document.getElementById('number-fields');
 
 let numRows = localStorage.getItem('numRows');
 
+const leaderboardTable = document.getElementById('leaderboard-table');
+const leaderboardHeading = document.getElementById('leaderboard-heading');
+
+
 if (!numRows) {
     localStorage.setItem('numRows', 10);
 }
@@ -263,46 +267,42 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             const boardButton = document.getElementById('leader-board');
             boardButton.classList.add('boardButton');
+            leaderboardTable.style.visibility='hidden';
 
             boardButton.onclick = async function (e) {
 
                 e.preventDefault();
+                leaderboardTable.style.visibility='visible';
                 const res = await axios.get('http://localhost:3000/premium/getLeaderboard', { headers: { "Authorization": token } });
                 const data = res.data.resData;
 
-                const heading = document.createElement('h2');
-                heading.appendChild(document.createTextNode('Leaderboard'));
-                leaderboardList.appendChild(heading);
+                leaderboardHeading.appendChild(document.createTextNode('Leaderboard'));
+
                 for (let i = 0; i < data.length; i++) {
-                    const li = document.createElement('li');
-                    if (i % 2 === 0) {
-                        li.classList.add('leaderboard-list-item-even')
-                    }
-                    else {
-                        li.classList.add('leaderboard-list-item-odd')
-                    }
-                    li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_expense}`));
-                    leaderboardList.appendChild(li);
+                    const tr = document.createElement('tr');
+
+                    const rank = i + 1;
+                    const rankCol = document.createElement('td');
+                    rankCol.classList.add('leaderboard-col');
+                    rankCol.appendChild(document.createTextNode(`${rank}`));
+                    tr.appendChild(rankCol);
+
+                    const name = data[i].name;
+                    const nameCol = document.createElement('td');
+                    nameCol.classList.add('leaderboard-col');
+                    nameCol.appendChild(document.createTextNode(`${name}`));
+                    tr.appendChild(nameCol);
+
+                    const expense = data[i].total_expense;
+                    const expenseCol = document.createElement('td');
+                    expenseCol.classList.add('leaderboard-col');
+                    expenseCol.appendChild(document.createTextNode(`${expense}`));
+                    tr.appendChild(expenseCol);
+
+                    leaderboardTable.appendChild(tr);
                 }
             }
-            await axios.get('http://localhost:3000/users/getDownloads', { headers: { "Authorization": token } })
-                .then(response => {
-                    const files = response.data.response;
-                    downloadsHead.appendChild(document.createTextNode('Downloaded files'));
-                    files.forEach((file) => {
-                        const li = document.createElement('li');
-                        const a = document.createElement('a');
-                        a.href = file.url;
-                        a.appendChild(document.createTextNode(`    Download file again`))
-                        li.appendChild(document.createTextNode(`${file.file_name}`));
-                        li.appendChild(a);
-                        downloadList.appendChild(li);
-                    })
 
-                })
-                .catch(err => {
-                    throw new Error(err);
-                })
         }
     }
     catch (err) {
@@ -310,45 +310,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 })
 
-// window.addEventListener('DOMContentLoaded', async () => {
-//     try {
-
-//         const response = await axios.get('http://localhost:3000/purchase/premiumOrNot', { headers: { "Authorization": token } });
-//         const isPremium = response.data.isPremium;
-//         if (isPremium === 'true') {
-//             razorpayBtn.innerHTML = 'Premium User 👑';
-//             razorpayBtn.classList.add('premiumButton');
-
-//             const boardButton = document.getElementById('leader-board');
-//             boardButton.classList.add('boardButton');
-
-//             boardButton.onclick = async function (e) {
-
-//                 e.preventDefault();
-//                 const res = await axios.get('http://localhost:3000/premium/getLeaderboard', { headers: { "Authorization": token } });
-//                 const data = res.data.resData;
-
-//                 const heading = document.createElement('h2');
-//                 heading.appendChild(document.createTextNode('Leaderboard'));
-//                 leaderboardList.appendChild(heading);
-//                 for (let i = 0; i < data.length; i++) {
-//                     const li = document.createElement('li');
-//                     if (i % 2 === 0) {
-//                         li.classList.add('leaderboard-list-item-even')
-//                     }
-//                     else {
-//                         li.classList.add('leaderboard-list-item-odd')
-//                     }
-//                     li.appendChild(document.createTextNode(`Name-${data[i].name}  Total Expense-${data[i].total_expense}`));
-//                     leaderboardList.appendChild(li);
-//                 }
-//             }
-//         }
-//     }
-//     catch (err) {
-//         console.log(err);
-//     }
-// });
 
 
 document.getElementById('razorpayBtn').onclick = async function (e) {
