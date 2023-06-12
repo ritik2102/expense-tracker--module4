@@ -1,5 +1,7 @@
 const express=require("express");
 const app=express();
+const fs=require('fs');
+const path=require("path");
 
 const bodyParser=require("body-parser");
 app.use(bodyParser.json({extended: false}));
@@ -7,12 +9,21 @@ app.use(bodyParser.json({extended: false}));
 const cors=require('cors');
 app.use(cors());
 const sequelize=require('./util/database');
+// using helmetfor secure response headers
+const helmet=require('helmet');
+const morgan=require('morgan');
+
+// flags:'a' to make sure that logs are appended and not overwritten
+const accessLogStream=fs.createWriteStream(path.join(__dirname,'access.log'),{flags:'a'});
 
 const userRoutes=require('./routes/users');
 const expenseRoutes=require('./routes/expense');
 const purchaseRoutes=require('./routes/purchase');
 const premiumRoutes=require('./routes/premium');
 const passwordRoutes=require('./routes/password');
+
+app.use(helmet());
+app.use(morgan('combined',{stream:accessLogStream}));
 
 app.use('/users',userRoutes);
 app.use('/expense',expenseRoutes);
@@ -26,7 +37,7 @@ const User=require('./model/user');
 const Expense=require('./model/expense');
 const Order=require('./model/order');
 const ForgotPasswordRequests=require('./model/forgot-password-requests');
-const Downloads=require('./model/downloads')
+const Downloads=require('./model/downloads');
 
 User.hasMany(ForgotPasswordRequests);
 ForgotPasswordRequests.belongsTo(User);
