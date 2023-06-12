@@ -74,7 +74,8 @@ exports.postUser = (req, res, next) => {
 
 function generateAccessToken(id, name, isPremium) {
     try {
-        return jwt.sign({ userId: id, name: name, isPremium: isPremium }, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c');
+        console.log("working uptil here");
+        return jwt.sign({ userId: id, name: name, isPremium: isPremium }, process.env.TOKEN_SECRET);
     }
     catch (err) {
         throw new Error(err);
